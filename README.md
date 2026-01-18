@@ -3,6 +3,9 @@
 ## Overview
 A Node.js + Express backend for a virtual event management platform using in-memory data. It supports secure user registration and login (bcrypt + JWT), event CRUD (organizers only), attendee registration, and email notifications on successful registration. Designed to be simple, testable, and ready to swap in a database later.
 
+## API Documentation
+- See the complete reference in [docs/api.md](docs/api.md).
+
 ## Goals
 - Implement secure authentication with role-based authorization (organizer vs attendee).
 - Manage events and participant lists fully in-memory.
