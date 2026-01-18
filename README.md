@@ -1,7 +1,7 @@
 # Virtual Event Backend — Plan & Architecture
 
 ## Overview
-A Node.js + Express backend for a virtual event management platform using in-memory data. It supports secure user registration and login (bcrypt + JWT), event CRUD (organizers only), attendee registration, and email notifications on successful registration. Designed to be simple, testable, and ready to swap in a database later.
+A Node.js + Express backend for a virtual event management platform using in-memory data. It supports secure user registration and login (bcrypt + JWT), event CRUD (organizers only), attendee registration, and email notifications on successful registration. Designed to be simple, testable.
 
 ## API Documentation
 - See the complete reference in [docs/api.md](docs/api.md).
@@ -11,7 +11,6 @@ A Node.js + Express backend for a virtual event management platform using in-mem
 - Manage events and participant lists fully in-memory.
 - Expose RESTful endpoints for users and events.
 - Send async email notifications for event registrations.
-- Keep code clean with clear types via JSDoc.
 
 ## Tech Stack
 - Runtime: Node.js (LTS)
@@ -30,6 +29,7 @@ Runtime:
 - express
 - bcrypt
 - jsonwebtoken
+- resend
 - nodemailer
 - dotenv
 - cors
@@ -42,7 +42,6 @@ Runtime:
 Dev:
 - jest
 - supertest
-- tsd-jsdoc (optional: JSDoc type checking) OR eslint + @types/node for linting
 
 ## High-Level Architecture
 ```
@@ -77,31 +76,10 @@ virtual-event/
 └─ package.json
 ```
 
-## Data Models (JSDoc)
-```js
-/**
- * @typedef {Object} User
- * @property {string} id
- * @property {string} email
- * @property {string} passwordHash
- * @property {('organizer'|'attendee')} role
- */
-
-/**
- * @typedef {Object} Event
- * @property {string} id
- * @property {string} title
- * @property {string} description
- * @property {string} date        // ISO date (YYYY-MM-DD)
- * @property {string} time        // HH:mm
- * @property {string} organizerId
- * @property {string[]} participants
- */
-```
 
 ## Authentication & Authorization
-- Registration hashes passwords with bcrypt and stores users in-memory.
-- Login returns a signed JWT with claims: `userId`, `role`.
+- Registration hashes passwords with bcrypt and stores users in Postgres Db.
+- Login returns a signed JWT with claims: `userId`, `role`, sent Email after valid user registration.
 - Protected routes require `Authorization: Bearer <token>`.
 - Event CRUD is restricted to `role = organizer`.
 - Event registration is allowed for authenticated users.
@@ -165,17 +143,6 @@ EMAIL_FROM_NAME=Virtual Event
 - Arrange-Act-Assert per test.
 - Cover: registration, login (token), event CRUD (authz), event registration, email send mock.
 
-## Development Plan (TODOs)
-1. Write project plan in README (this file).
-2. Initialize Node + Express scaffold.
-3. Add runtime deps (express, bcrypt, jsonwebtoken, nodemailer, dotenv, cors, morgan, uuid, zod, prisma, @prisma/client).
-4. Configure Docker Compose for Postgres and `.env`.
-5. Define Prisma schema for `User` and `Event` + migrate.
-6. Build auth routes (/register, /login) + JWT middleware.
-7. Build events routes (CRUD + /:id/register) with role guard.
-8. Configure Nodemailer; send email on registration.
-9. Add tests with Jest + Supertest.
-10. Run and verify flows locally.
 
 ## Quick Start (after scaffolding)
 ```bash
@@ -194,6 +161,9 @@ docker compose up -d
 # initialize Prisma
 npx prisma generate
 npx prisma migrate dev --name init
+
+npx prisma studio
+
 ```
 
 ## Usage (API Examples)
@@ -257,8 +227,4 @@ Admin (dev/test):
 Notes:
 - Replace YOUR_TOKEN with the JWT from the login response.
 - Dates use YYYY-MM-DD; times use HH:mm.
-- In dev, email responses may include `emailPreviewUrl` for Ethereal or `emailError` on failure.
 
-## Notes
-- We can swap in a real database later by replacing the `stores.js` layer with a repository interface implementation.
-- If you prefer express-validator instead of zod, we can adjust validators accordingly.
