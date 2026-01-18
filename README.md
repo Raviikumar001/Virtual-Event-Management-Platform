@@ -1,7 +1,7 @@
 # Virtual Event Backend — Plan & Architecture
 
 ## Overview
-A Node.js + Express backend for a virtual event management platform using in-memory data. It supports secure user registration and login (bcrypt + JWT), event CRUD (organizers only), attendee registration, and email notifications on successful registration. Designed to be simple, testable.
+A Node.js + Express backend for a virtual event management platform using Postgres DB. It supports secure user registration and login (bcrypt + JWT), event CRUD (organizers only), attendee registration, and email notifications on successful registration. Designed to be simple, testable.
 
 ## API Documentation
 - See the complete reference in [docs/api.md](docs/api.md).
@@ -18,7 +18,7 @@ A Node.js + Express backend for a virtual event management platform using in-mem
 - Database: PostgreSQL (Docker)
 - ORM: Prisma (schema/migrations, PostgreSQL adapter)
 - Auth: bcrypt (password hashing), jsonwebtoken (JWT)
-- Email: Nodemailer (SMTP; Ethereal fallback in dev)
+- Email:(Resend)
 - Config: dotenv
 - Validation: zod (schema-based validation) or express-validator (alternative)
 - Utilities: uuid (IDs), cors, morgan (logging)
