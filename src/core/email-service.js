@@ -1,11 +1,7 @@
 const nodemailer = require('nodemailer');
 const { buildWelcomeTemplate, buildEventRegistrationTemplate } = require('./email-templates');
 
-/**
- * Create nodemailer transporter. Falls back to Ethereal test account
- * if credentials are not provided.
- * @returns {Promise<import('nodemailer').Transporter>}
- */
+
 async function createTransporter() {
   const { EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } = loadMailerEnv();
   if (!EMAIL_USER || !EMAIL_PASS) {
@@ -30,10 +26,7 @@ async function createTransporter() {
   });
 }
 
-/**
- * Load mailer environment variables.
- * @returns {{ EMAIL_HOST: string, EMAIL_PORT: number, EMAIL_USER: string, EMAIL_PASS: string, EMAIL_FROM: string, EMAIL_FROM_NAME?: string }}
- */
+
 function loadMailerEnv() {
   const { EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS, EMAIL_FROM, EMAIL_FROM_NAME } = process.env;
   return {
@@ -46,18 +39,7 @@ function loadMailerEnv() {
   };
 }
 
-/**
- * Send registration email.
- * @param {string} toEmail
- * @param {{ title: string, date: string, time: string }} eventInfo
- * @returns {Promise<void>}
- */
-/**
- * Send generic mail and return preview URL when available.
- * @param {string} toEmail
- * @param {{ subject: string, text: string, html: string }} template
- * @returns {Promise<{ previewUrl?: string }>} 
- */
+
 async function sendMail(toEmail, template) {
   const transporter = await createTransporter();
   const { EMAIL_FROM, EMAIL_FROM_NAME } = loadMailerEnv();
@@ -70,22 +52,13 @@ async function sendMail(toEmail, template) {
   return { previewUrl };
 }
 
-/**
- * Send event registration email.
- * @param {string} toEmail
- * @param {{ title: string, date: string, time: string }} eventInfo
- * @returns {Promise<{ previewUrl?: string }>}
- */
+
 async function sendRegistrationEmail(toEmail, eventInfo) {
   const template = buildEventRegistrationTemplate(eventInfo);
   return sendMail(toEmail, template);
 }
 
-/**
- * Send welcome email on account registration.
- * @param {string} toEmail
- * @returns {Promise<{ previewUrl?: string }>}
- */
+
 async function sendWelcomeEmail(toEmail) {
   const template = buildWelcomeTemplate(toEmail);
   return sendMail(toEmail, template);

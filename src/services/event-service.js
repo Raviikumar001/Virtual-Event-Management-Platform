@@ -1,9 +1,6 @@
 const { getPrisma } = require('../models/prisma-client');
 
-/**
- * List all events with participant count.
- * @returns {Promise<Array<{ id: string, title: string, description: string, date: string, time: string, organizerId: string, participants: number }>>}
- */
+
 async function listEvents() {
   const prisma = getPrisma();
   const events = await prisma.event.findMany({ include: { registrations: true } });
@@ -18,11 +15,7 @@ async function listEvents() {
   }));
 }
 
-/**
- * Get event by id with participant emails.
- * @param {string} id
- * @returns {Promise<{ id: string, title: string, description: string, date: string, time: string, organizerId: string, participants: string[] } | null>}
- */
+
 async function getEventById(id) {
   const prisma = getPrisma();
   const e = await prisma.event.findUnique({ where: { id }, include: { registrations: { include: { user: true } } } });
@@ -38,11 +31,7 @@ async function getEventById(id) {
   };
 }
 
-/**
- * Create event.
- * @param {{ title: string, description: string, date: string, time: string, organizerId: string }} input
- * @returns {Promise<{ id: string }>} 
- */
+
 async function createEvent(input) {
   const prisma = getPrisma();
   const date = new Date(input.date + 'T00:00:00.000Z');
@@ -50,13 +39,7 @@ async function createEvent(input) {
   return { id: e.id };
 }
 
-/**
- * Update event (organizer only).
- * @param {string} id
- * @param {{ title?: string, description?: string, date?: string, time?: string }} data
- * @param {string} organizerId
- * @returns {Promise<void>}
- */
+
 async function updateEvent(id, data, organizerId) {
   const prisma = getPrisma();
   const existing = await prisma.event.findUnique({ where: { id } });
@@ -67,12 +50,7 @@ async function updateEvent(id, data, organizerId) {
   await prisma.event.update({ where: { id }, data: update });
 }
 
-/**
- * Delete event (organizer only).
- * @param {string} id
- * @param {string} organizerId
- * @returns {Promise<void>}
- */
+
 async function deleteEvent(id, organizerId) {
   const prisma = getPrisma();
   const existing = await prisma.event.findUnique({ where: { id } });
@@ -82,12 +60,7 @@ async function deleteEvent(id, organizerId) {
   await prisma.event.delete({ where: { id } });
 }
 
-/**
- * Register user for event.
- * @param {string} eventId
- * @param {string} userId
- * @returns {Promise<void>}
- */
+
 async function registerForEvent(eventId, userId) {
   const prisma = getPrisma();
   const existing = await prisma.event.findUnique({ where: { id: eventId } });
@@ -98,3 +71,21 @@ async function registerForEvent(eventId, userId) {
 }
 
 module.exports = { listEvents, getEventById, createEvent, updateEvent, deleteEvent, registerForEvent };
+
+async function listEventParticipants(eventId, organizerId) {
+  const prisma = getPrisma();
+  const e = await prisma.event.findUnique({ where: { id: eventId }, include: { registrations: { include: { user: true } } } });
+  if (!e) throw Object.assign(new Error('Event not found'), { status: 404 });
+  if (e.organizerId !== organizerId) throw Object.assign(new Error('Forbidden'), { status: 403 });
+  return e.registrations.map(r => r.user.email);
+}
+
+
+async function listUserRegistrations(userId) {
+  const prisma = getPrisma();
+  const regs = await prisma.registration.findMany({ where: { userId }, include: { event: true } });
+  return regs.map(r => ({ id: r.event.id, title: r.event.title, date: r.event.date.toISOString().slice(0,10), time: r.event.time }));
+}
+
+module.exports.listEventParticipants = listEventParticipants;
+module.exports.listUserRegistrations = listUserRegistrations;

@@ -193,6 +193,69 @@ npx prisma generate
 npx prisma migrate dev --name init
 ```
 
+## Usage (API Examples)
+
+Auth:
+- Register (returns user; dev may include email diagnostics)
+	curl -X POST http://localhost:3000/register \
+		-H "Content-Type: application/json" \
+		-d '{"email":"org@example.com","password":"StrongPass123","role":"organizer"}'
+
+- Login (returns token)
+	curl -X POST http://localhost:3000/login \
+		-H "Content-Type: application/json" \
+		-d '{"email":"org@example.com","password":"StrongPass123"}'
+
+Events:
+- Create event (organizer only)
+	curl -X POST http://localhost:3000/events \
+		-H "Authorization: Bearer YOUR_TOKEN" \
+		-H "Content-Type: application/json" \
+		-d '{"title":"Kickoff","description":"Project kickoff","date":"2026-02-01","time":"10:00"}'
+
+- List events
+	curl -X GET http://localhost:3000/events \
+		-H "Authorization: Bearer YOUR_TOKEN"
+
+- Get event
+	curl -X GET http://localhost:3000/events/EVENT_ID \
+		-H "Authorization: Bearer YOUR_TOKEN"
+
+- Update event (organizer only)
+	curl -X PUT http://localhost:3000/events/EVENT_ID \
+		-H "Authorization: Bearer YOUR_TOKEN" \
+		-H "Content-Type: application/json" \
+		-d '{"description":"Updated description"}'
+
+- Delete event (organizer only)
+	curl -X DELETE http://localhost:3000/events/EVENT_ID \
+		-H "Authorization: Bearer YOUR_TOKEN"
+
+- Register for event (attendee)
+	curl -X POST http://localhost:3000/events/EVENT_ID/register \
+		-H "Authorization: Bearer YOUR_TOKEN"
+
+Participants & Registrations:
+- List participants (organizer only)
+	curl -X GET http://localhost:3000/events/EVENT_ID/participants \
+		-H "Authorization: Bearer YOUR_TOKEN"
+
+- My registrations
+	curl -X GET http://localhost:3000/me/registrations \
+		-H "Authorization: Bearer YOUR_TOKEN"
+
+Admin (dev/test):
+- Send test email (organizer only)
+	curl -X POST http://localhost:3000/admin/test-email \
+		-H "Authorization: Bearer YOUR_TOKEN" \
+		-H "Content-Type: application/json" \
+		-d '{"to":"you@example.com"}'
+
+Notes:
+- Replace YOUR_TOKEN with the JWT from the login response.
+- Dates use YYYY-MM-DD; times use HH:mm.
+- In dev, email responses may include `emailPreviewUrl` for Ethereal or `emailError` on failure.
+
 ## Notes
 - We can swap in a real database later by replacing the `stores.js` layer with a repository interface implementation.
 - If you prefer express-validator instead of zod, we can adjust validators accordingly.

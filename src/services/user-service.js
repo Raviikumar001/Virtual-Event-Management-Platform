@@ -5,20 +5,11 @@ const { loadEnv } = require('../core/env');
 
 const SALT_ROUNDS = 10;
 
-/**
- * Map lowercase role to Prisma enum.
- * @param {string} roleLower
- * @returns {('ORGANIZER'|'ATTENDEE')}
- */
 function mapRole(roleLower) {
   return roleLower === 'organizer' ? 'ORGANIZER' : 'ATTENDEE';
 }
 
-/**
- * Register a new user.
- * @param {{ email: string, password: string, role: 'organizer'|'attendee' }} input
- * @returns {Promise<{ id: string, email: string, role: 'ORGANIZER'|'ATTENDEE' }>}
- */
+
 async function registerUser(input) {
   const prisma = getPrisma();
   const existing = await prisma.user.findUnique({ where: { email: input.email } });
@@ -29,11 +20,7 @@ async function registerUser(input) {
   return { id: user.id, email: user.email, role: user.role };
 }
 
-/**
- * Login user and return JWT.
- * @param {{ email: string, password: string }} input
- * @returns {Promise<{ token: string, user: { id: string, email: string, role: 'ORGANIZER'|'ATTENDEE' } }>}
- */
+
 async function loginUser(input) {
   const prisma = getPrisma();
   const user = await prisma.user.findUnique({ where: { email: input.email } });

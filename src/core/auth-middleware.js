@@ -1,21 +1,12 @@
 const jwt = require('jsonwebtoken');
 const { loadEnv } = require('./env');
 
-/**
- * Extract Bearer token from Authorization header.
- * @param {import('express').Request} req
- * @returns {string | null}
- */
 function getTokenFromHeader(req) {
   const header = req.headers.authorization || '';
   if (!header.startsWith('Bearer ')) return null;
   return header.slice(7);
 }
 
-/**
- * Require a valid JWT and attach auth info to req.
- * @type {import('express').RequestHandler}
- */
 function requireAuth(req, res, next) {
   try {
     const token = getTokenFromHeader(req);
@@ -29,11 +20,7 @@ function requireAuth(req, res, next) {
   }
 }
 
-/**
- * Guard middleware requiring a specific role.
- * @param {('ORGANIZER'|'ATTENDEE')} role
- * @returns {import('express').RequestHandler}
- */
+
 function requireRole(role) {
   return (req, res, next) => {
     const current = req.auth?.role;

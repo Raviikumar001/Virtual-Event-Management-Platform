@@ -1,8 +1,4 @@
-/**
- * Load environment configuration with defaults.
- *
- * @returns {{ PORT: number, JWT_SECRET: string, APP_BASE_URL: string, DATABASE_URL: string }}
- */
+
 function loadEnv() {
   require('dotenv').config();
   const PORT = Number(process.env.PORT || 3000);

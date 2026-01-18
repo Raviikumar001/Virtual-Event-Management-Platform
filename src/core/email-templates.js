@@ -1,8 +1,4 @@
-/**
- * Build welcome email template.
- * @param {string} userEmail
- * @returns {{ subject: string, text: string, html: string }}
- */
+
 function buildWelcomeTemplate(userEmail) {
   const subject = 'Welcome to Virtual Event Platform';
   const text = `Hello ${userEmail}, your account has been created successfully.`;
@@ -18,11 +14,7 @@ function buildWelcomeTemplate(userEmail) {
   return { subject, text, html };
 }
 
-/**
- * Build event registration email template.
- * @param {{ title: string, date: string, time: string }} eventInfo
- * @returns {{ subject: string, text: string, html: string }}
- */
+
 function buildEventRegistrationTemplate(eventInfo) {
   const subject = `Registration Confirmed: ${eventInfo.title}`;
   const text = `You have registered for ${eventInfo.title} on ${eventInfo.date} at ${eventInfo.time}.`;

@@ -1,7 +1,7 @@
 const express = require('express');
 const { requireAuth, requireRole } = require('../core/auth-middleware');
 const { CreateEventInput, UpdateEventInput } = require('../utils/validators');
-const { listEvents, getEventById, createEvent, updateEvent, deleteEvent, registerForEvent } = require('../services/event-service');
+const { listEvents, getEventById, createEvent, updateEvent, deleteEvent, registerForEvent, listEventParticipants } = require('../services/event-service');
 const { sendRegistrationEmail } = require('../core/email-service');
 const { getPrisma } = require('../models/prisma-client');
 
@@ -81,6 +81,15 @@ router.post('/events/:id/register', requireAuth, async (req, res, next) => {
       if (emailError) response.emailError = emailError;
     }
     res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/events/:id/participants', requireAuth, requireRole('ORGANIZER'), async (req, res, next) => {
+  try {
+    const participants = await listEventParticipants(String(req.params.id), req.auth.userId);
+    res.json({ participants });
   } catch (err) {
     next(err);
   }

@@ -1,8 +1,3 @@
-/**
- * Express application bootstrap.
- *
- * @returns {import('express').Express}
- */
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -21,9 +16,11 @@ function createApp() {
   const authRoutes = require('./routes/auth-routes');
   const eventRoutes = require('./routes/event-routes');
   const adminRoutes = require('./routes/admin-routes');
+  const userRoutes = require('./routes/user-routes');
   app.use(authRoutes);
   app.use(eventRoutes);
   app.use(adminRoutes);
+  app.use(userRoutes);
 
   const errorHandler = require('./core/error-handler');
   app.use(errorHandler);

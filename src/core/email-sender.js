@@ -2,10 +2,7 @@ const { MailerSend, EmailParams, Sender, Recipient } = require('mailersend');
 const { sendWelcomeEmail: sendWelcomeSMTP, sendRegistrationEmail: sendRegistrationSMTP } = require('./email-service');
 const { buildWelcomeTemplate, buildEventRegistrationTemplate } = require('./email-templates');
 
-/**
- * Read env for MailerSend and sender identity.
- * @returns {{ apiKey: string, fromEmail: string, fromName: string }}
- */
+
 function loadMailerEnv() {
   const apiKey = String(process.env.MAILERSEND_API_KEY || process.env.API_KEY || '');
   const fromEmail = String(process.env.EMAIL_FROM || 'no-reply@virtual-event.local');
@@ -13,12 +10,7 @@ function loadMailerEnv() {
   return { apiKey, fromEmail, fromName };
 }
 
-/**
- * Send using MailerSend API.
- * @param {string} toEmail
- * @param {{ subject: string, text: string, html: string }} template
- * @returns {Promise<{ provider: 'mailersend' }>}
- */
+
 async function sendViaMailerSend(toEmail, template) {
   const { apiKey, fromEmail, fromName } = loadMailerEnv();
   const mailerSend = new MailerSend({ apiKey });
@@ -34,13 +26,7 @@ async function sendViaMailerSend(toEmail, template) {
   return { provider: 'mailersend' };
 }
 
-/**
- * Send welcome email.
- * - If MailerSend API key exists, use MailerSend.
- * - Otherwise, use SMTP (Ethereal fallback in dev).
- * @param {string} toEmail
- * @returns {Promise<{ previewUrl?: string, provider?: 'mailersend' }>}
- */
+
 async function sendWelcomeEmail(toEmail) {
     console.log('sendWelcomeEmail toEmail:', toEmail);
   const { apiKey } = loadMailerEnv();
@@ -51,14 +37,7 @@ async function sendWelcomeEmail(toEmail) {
   return sendWelcomeSMTP(toEmail);
 }
 
-/**
- * Send event registration email.
- * - If MailerSend API key exists, use MailerSend.
- * - Otherwise, use SMTP (Ethereal fallback in dev).
- * @param {string} toEmail
- * @param {{ title: string, date: string, time: string }} eventInfo
- * @returns {Promise<{ previewUrl?: string, provider?: 'mailersend' }>}
- */
+
 async function sendRegistrationEmail(toEmail, eventInfo) {
   const { apiKey } = loadMailerEnv();
   const template = buildEventRegistrationTemplate(eventInfo);
