@@ -62,8 +62,25 @@ router.post('/events/:id/register', requireAuth, async (req, res, next) => {
     const prisma = getPrisma();
     const user = await prisma.user.findUnique({ where: { id: req.auth.userId } });
     const event = await prisma.event.findUnique({ where: { id: eventId } });
-    if (user && event) await sendRegistrationEmail(user.email, { title: event.title, date: event.date.toISOString().slice(0,10), time: event.time });
-    res.status(200).json({ registered: true });
+    let emailPreviewUrl;
+    let emailProvider;
+    let emailError;
+    if (user && event) {
+      try {
+        const result = await sendRegistrationEmail(user.email, { title: event.title, date: event.date.toISOString().slice(0,10), time: event.time });
+        emailPreviewUrl = result.previewUrl;
+        emailProvider = result.provider;
+      } catch (_mailErr) {
+        emailError = _mailErr?.message || 'Email send failed';
+      }
+    }
+    const response = { registered: true };
+    if (process.env.NODE_ENV !== 'production') {
+      if (emailPreviewUrl) response.emailPreviewUrl = emailPreviewUrl;
+      if (emailProvider) response.emailProvider = emailProvider;
+      if (emailError) response.emailError = emailError;
+    }
+    res.status(200).json(response);
   } catch (err) {
     next(err);
   }

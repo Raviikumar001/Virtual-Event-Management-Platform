@@ -16,7 +16,7 @@ A Node.js + Express backend for a virtual event management platform using in-mem
 - Database: PostgreSQL (Docker)
 - ORM: Prisma (schema/migrations, PostgreSQL adapter)
 - Auth: bcrypt (password hashing), jsonwebtoken (JWT)
-- Email: Nodemailer (Ethereal/Mailtrap for dev)
+- Email: Nodemailer (SMTP; Ethereal fallback in dev)
 - Config: dotenv
 - Validation: zod (schema-based validation) or express-validator (alternative)
 - Utilities: uuid (IDs), cors, morgan (logging)
@@ -135,6 +135,8 @@ Events:
 - EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS: SMTP credentials
 - APP_BASE_URL: e.g., http://localhost:3000
 - DATABASE_URL: Postgres connection string (Docker)
+- EMAIL_FROM: sender email (e.g., no-reply@yourdomain.com)
+- EMAIL_FROM_NAME: sender display name or an email (fallback when EMAIL_FROM not set)
 
 Example `.env.example`:
 ```
@@ -145,6 +147,8 @@ EMAIL_USER=your_user
 EMAIL_PASS=your_pass
 APP_BASE_URL=http://localhost:3000
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/virtual_event?schema=public
+EMAIL_FROM=no-reply@yourdomain.com
+EMAIL_FROM_NAME=Virtual Event
 ```
 
 ## Security Considerations

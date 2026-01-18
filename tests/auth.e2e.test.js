@@ -2,6 +2,11 @@ const request = require('supertest');
 const { createApp } = require('../src/app');
 const { getPrisma } = require('../src/models/prisma-client');
 
+jest.mock('../src/core/email-service', () => ({
+  sendWelcomeEmail: jest.fn().mockResolvedValue({ previewUrl: undefined }),
+  sendRegistrationEmail: jest.fn().mockResolvedValue(undefined),
+}));
+
 describe('Auth E2E', () => {
   const app = createApp();
   const prisma = getPrisma();

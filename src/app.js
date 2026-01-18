@@ -20,8 +20,10 @@ function createApp() {
 
   const authRoutes = require('./routes/auth-routes');
   const eventRoutes = require('./routes/event-routes');
+  const adminRoutes = require('./routes/admin-routes');
   app.use(authRoutes);
   app.use(eventRoutes);
+  app.use(adminRoutes);
 
   const errorHandler = require('./core/error-handler');
   app.use(errorHandler);
